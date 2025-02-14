@@ -127,19 +127,38 @@ bot.on('message', async (msg) => {
     if (!state) {
         // Check if user is part of a valentine pair
         try {
-            const result = await db.query(
+            // First try to find a pair where the user is the sender
+            let result = await db.query(
                 `SELECT * FROM valentine_pairs 
-                WHERE (sender_id = $1 OR receiver_id = $1)
-                AND receiver_id IS NOT NULL
+                WHERE sender_id = $1 AND receiver_id IS NOT NULL
                 ORDER BY created_at DESC
                 LIMIT 1`,
                 [userId]
             );
 
+            if (result.rows.length === 0) {
+                // If not found as sender, try to find as receiver
+                result = await db.query(
+                    `SELECT * FROM valentine_pairs 
+                    WHERE receiver_id = $1
+                    ORDER BY created_at DESC
+                    LIMIT 1`,
+                    [userId]
+                );
+            }
+
             if (result.rows.length > 0) {
                 const pair = result.rows[0];
-                // Determine the target ID based on who sent the message
-                const targetId = userId === pair.sender_id ? pair.receiver_id : pair.sender_id;
+                let targetId;
+
+                // If user is sender, send to receiver
+                if (userId === pair.sender_id) {
+                    targetId = pair.receiver_id;
+                } 
+                // If user is receiver, send to sender
+                else if (userId === pair.receiver_id) {
+                    targetId = pair.sender_id;
+                }
 
                 if (targetId) {
                     // Store the message
