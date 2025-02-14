@@ -5,7 +5,7 @@ async function statsHandler(msg, bot) {
     
     // Check if user is admin
     if (msg.from.id.toString() !== process.env.ADMIN_USER_ID) {
-        return bot.sendMessage(chatId, "Sorry, this command is only available to administrators.");
+        return bot.sendMessage(chatId, "متأسفانه این دستور فقط برای ادمین‌ها در دسترس است.");
     }
 
     try {
@@ -34,18 +34,18 @@ async function statsHandler(msg, bot) {
         const activeUsers = activeUsersResult.rows[0].total;
 
         const statsMessage = 
-            "📊 Bot Statistics 📊\n\n" +
-            `Total Users: ${totalUsers}\n` +
-            `Active Users (24h): ${activeUsers}\n` +
-            `Total Valentine Pairs: ${totalPairs}\n` +
-            `Completed Pairs: ${completedPairs}\n` +
-            `Total Messages Exchanged: ${totalMessages}\n\n` +
-            `Conversion Rate: ${((completedPairs / totalPairs) * 100).toFixed(2)}%`;
+            "📊 آمار ربات 📊\n\n" +
+            `تعداد کل کاربران: ${totalUsers}\n` +
+            `کاربران فعال (۲۴ ساعت گذشته): ${activeUsers}\n` +
+            `تعداد کل پیام‌های ولنتاین: ${totalPairs}\n` +
+            `پیام‌های دریافت شده: ${completedPairs}\n` +
+            `تعداد کل پیام‌های رد و بدل شده: ${totalMessages}\n\n` +
+            `نرخ تبدیل: ${((completedPairs / totalPairs) * 100).toFixed(2)}٪`;
 
         await bot.sendMessage(chatId, statsMessage);
     } catch (error) {
         console.error('Error getting stats:', error);
-        await bot.sendMessage(chatId, "Sorry, there was an error getting the statistics.");
+        await bot.sendMessage(chatId, "متأسفانه در دریافت آمار مشکلی پیش آمده.");
     }
 }
 

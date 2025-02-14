@@ -47,7 +47,7 @@ bot.onText(/\/start/, async (msg) => {
     );
 
     if (!username) {
-        return bot.sendMessage(chatId, "Sorry, you need to have a Telegram username to use this bot!");
+        return bot.sendMessage(chatId, "برای استفاده از این ربات، باید یک نام کاربری تلگرام داشته باشید!");
     }
 
     // Check if this user is a receiver of a valentine message
@@ -66,10 +66,10 @@ bot.onText(/\/start/, async (msg) => {
             );
 
             // Send the initial valentine message
-            await bot.sendMessage(chatId, "💘 Someone sent you a valentine message!");
+            await bot.sendMessage(chatId, "💘 یک نفر برای شما پیام ولنتاین فرستاده!");
             // await bot.sendSticker(chatId, 'CAACAgIAAxkBAAEBPQZlK6XE9jG-8WO5QVLvBuoAAXCF_gACIgADr8ZRGhXNsJ_AAAABeB4E');
             await bot.sendMessage(chatId, pair.initial_message);
-            return bot.sendMessage(chatId, "You can now reply to them through me, and I'll pass your messages along! 💝");
+            return bot.sendMessage(chatId, "حالا می‌تونید از طریق من با هم صحبت کنید! پیام‌هاتون رو برای هم می‌فرستم 💝");
         }
     } catch (error) {
         console.error('Database error:', error);
@@ -77,8 +77,8 @@ bot.onText(/\/start/, async (msg) => {
 
     // If not a receiver, show the main menu
     bot.sendMessage(chatId, 
-        "Welcome to Valentine Bot! 💝\n\n" +
-        "Send /send_valentine to send an anonymous valentine message to someone special!"
+        "به ربات ولنتاین خوش آمدید! 💝\n\n" +
+        "برای ارسال پیام ناشناس ولنتاین به کسی که دوستش دارید، دستور /send_valentine را بفرستید!"
     );
 });
 
@@ -93,13 +93,13 @@ bot.onText(/\/send_valentine/, (msg) => {
     const userId = msg.from.id;
     
     if (!msg.from.username) {
-        return bot.sendMessage(chatId, "Sorry, you need to have a Telegram username to use this bot!");
+        return bot.sendMessage(chatId, "برای استفاده از این ربات، باید یک نام کاربری تلگرام داشته باشید!");
     }
 
     userStates.set(userId, { stage: 'awaiting_username' });
     bot.sendMessage(chatId, 
-        "Please send me the Telegram username of the person you want to send a valentine to\n" +
-        "(without the @ symbol)"
+        "لطفاً نام کاربری تلگرام شخصی که می‌خواهید برایش پیام ولنتاین بفرستید را وارد کنید\n" +
+        "(بدون علامت @)"
     );
 });
 
@@ -169,14 +169,14 @@ bot.on('message', async (msg) => {
                     await bot.sendMessage(targetId, msg.text);
                 } else {
                     console.log(`Invalid target ID: ${targetId} for user ${userId}`);
-                    bot.sendMessage(chatId, "Sorry, there was an error identifying your valentine pair.");
+                    bot.sendMessage(chatId, "متأسفانه در شناسایی مخاطب شما مشکلی پیش آمده.");
                 }
             } else {
                 console.log(`No valentine pair found for user ${userId}`);
             }
         } catch (error) {
             console.error('Database error:', error);
-            bot.sendMessage(chatId, "Sorry, there was an error sending your message.");
+            bot.sendMessage(chatId, "متأسفانه در ارسال پیام شما مشکلی پیش آمده. لطفاً دوباره تلاش کنید.");
         }
         return;
     }
@@ -185,7 +185,7 @@ bot.on('message', async (msg) => {
         case 'awaiting_username':
             const targetUsername = msg.text.replace('@', '');
             if (targetUsername === msg.from.username) {
-                bot.sendMessage(chatId, "You can't send a valentine to yourself! Please try another username.");
+                bot.sendMessage(chatId, "شما نمی‌توانید برای خودتان پیام ولنتاین بفرستید! لطفاً نام کاربری شخص دیگری را وارد کنید.");
                 return;
             }
             userStates.set(userId, { 
@@ -193,8 +193,8 @@ bot.on('message', async (msg) => {
                 targetUsername
             });
             bot.sendMessage(chatId, 
-                "Great! Now send me the message you want to send to them.\n" +
-                "Make it special! 💝"
+                "عالیه! حالا پیامی که می‌خواهید برایشان بفرستید را بنویسید.\n" +
+                "سعی کنید پیامتان خاص و از ته دل باشه! 💝"
             );
             break;
 
@@ -207,14 +207,14 @@ bot.on('message', async (msg) => {
                 );
 
                 bot.sendMessage(chatId, 
-                    "Your valentine message has been saved! ❤️\n\n" +
-                    `When @${targetUsername} starts this bot, they'll receive your message with a lovely heart sticker!\n` +
-                    "You'll be able to chat with each other anonymously through me!"
+                    "پیام ولنتاین شما با موفقیت ذخیره شد! ❤️\n\n" +
+                    `وقتی @${targetUsername} ربات رو استارت کنه، پیام شما رو دریافت می‌کنه!\n` +
+                    "بعد از اون می‌تونید به صورت ناشناس با هم صحبت کنید!"
                 );
                 userStates.delete(userId);
             } catch (error) {
                 console.error('Database error:', error);
-                bot.sendMessage(chatId, "Sorry, there was an error saving your message. Please try again later.");
+                bot.sendMessage(chatId, "متأسفانه در ذخیره پیام شما مشکلی پیش آمده. لطفاً دوباره تلاش کنید.");
             }
             break;
     }

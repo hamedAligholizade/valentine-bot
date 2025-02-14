@@ -5,13 +5,13 @@ async function broadcastHandler(msg, bot) {
     
     // Check if user is admin
     if (msg.from.id.toString() !== process.env.ADMIN_USER_ID) {
-        return bot.sendMessage(chatId, "Sorry, this command is only available to administrators.");
+        return bot.sendMessage(chatId, "متأسفانه این دستور فقط برای ادمین‌ها در دسترس است.");
     }
 
     // Extract the broadcast message
     const match = msg.text.match(/\/broadcast (.+)/);
     if (!match) {
-        return bot.sendMessage(chatId, "Please provide a message to broadcast.\nFormat: /broadcast your message");
+        return bot.sendMessage(chatId, "لطفاً پیامی که می‌خواهید ارسال کنید را وارد کنید.\nفرمت: /broadcast پیام شما");
     }
 
     const broadcastMessage = match[1];
@@ -38,7 +38,7 @@ async function broadcastHandler(msg, bot) {
         for (const row of result.rows) {
             try {
                 await bot.sendMessage(row.user_id, 
-                    "📢 Broadcast Message:\n\n" +
+                    "📢 پیام مهم:\n\n" +
                     broadcastMessage
                 );
                 successCount++;
@@ -51,13 +51,13 @@ async function broadcastHandler(msg, bot) {
         }
 
         await bot.sendMessage(chatId, 
-            "📢 Broadcast Complete!\n\n" +
-            `✅ Successfully sent: ${successCount}\n` +
-            `❌ Failed: ${failCount}`
+            "📢 ارسال پیام به اتمام رسید!\n\n" +
+            `✅ با موفقیت ارسال شد: ${successCount}\n` +
+            `❌ ناموفق: ${failCount}`
         );
     } catch (error) {
         console.error('Error broadcasting message:', error);
-        await bot.sendMessage(chatId, "Sorry, there was an error broadcasting the message.");
+        await bot.sendMessage(chatId, "متأسفانه در ارسال پیام مشکلی پیش آمده.");
     }
 }
 
