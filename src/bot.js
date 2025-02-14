@@ -130,22 +130,27 @@ bot.on('message', async (msg) => {
             const result = await db.query(
                 `SELECT * FROM valentine_pairs 
                 WHERE (sender_id = $1 OR receiver_id = $1)
-                AND receiver_id IS NOT NULL`,
+                AND receiver_id IS NOT NULL
+                ORDER BY created_at DESC
+                LIMIT 1`,
                 [userId]
             );
 
             if (result.rows.length > 0) {
                 const pair = result.rows[0];
+                // Determine the target ID based on who sent the message
                 const targetId = userId === pair.sender_id ? pair.receiver_id : pair.sender_id;
 
-                // Store the message
-                await db.query(
-                    'INSERT INTO messages (pair_id, sender_id, message) VALUES ($1, $2, $3)',
-                    [pair.id, userId, msg.text]
-                );
+                if (targetId) {
+                    // Store the message
+                    await db.query(
+                        'INSERT INTO messages (pair_id, sender_id, message) VALUES ($1, $2, $3)',
+                        [pair.id, userId, msg.text]
+                    );
 
-                // Forward the message
-                await bot.sendMessage(targetId, msg.text);
+                    // Forward the message
+                    await bot.sendMessage(targetId, msg.text);
+                }
             }
         } catch (error) {
             console.error('Database error:', error);
