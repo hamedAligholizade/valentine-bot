@@ -127,6 +127,8 @@ bot.on('message', async (msg) => {
     if (!state) {
         // Check if user is part of a valentine pair
         try {
+            console.log(`Looking for valentine pair for user ${userId}`);
+            
             const result = await db.query(
                 `SELECT * FROM valentine_pairs 
                 WHERE (sender_id = $1 OR receiver_id = $1)
@@ -138,17 +140,39 @@ bot.on('message', async (msg) => {
 
             if (result.rows.length > 0) {
                 const pair = result.rows[0];
-                // If the current user is the sender, send to receiver, and vice versa
-                const targetId = (userId === pair.sender_id) ? pair.receiver_id : pair.sender_id;
+                console.log('Found pair:', {
+                    pair_id: pair.id,
+                    sender_id: pair.sender_id,
+                    receiver_id: pair.receiver_id,
+                    current_user_id: userId
+                });
 
-                // Store the message
-                await db.query(
-                    'INSERT INTO messages (pair_id, sender_id, message) VALUES ($1, $2, $3)',
-                    [pair.id, userId, msg.text]
-                );
+                let targetId;
+                // Explicitly check the role and set target
+                if (userId.toString() === pair.sender_id.toString()) {
+                    targetId = pair.receiver_id;
+                    console.log(`User ${userId} is sender, targeting receiver ${targetId}`);
+                } else if (userId.toString() === pair.receiver_id.toString()) {
+                    targetId = pair.sender_id;
+                    console.log(`User ${userId} is receiver, targeting sender ${targetId}`);
+                }
 
-                // Forward the message
-                await bot.sendMessage(targetId, msg.text);
+                if (targetId && targetId !== userId) {
+                    console.log(`Sending message from ${userId} to ${targetId}`);
+                    // Store the message
+                    await db.query(
+                        'INSERT INTO messages (pair_id, sender_id, message) VALUES ($1, $2, $3)',
+                        [pair.id, userId, msg.text]
+                    );
+
+                    // Forward the message
+                    await bot.sendMessage(targetId, msg.text);
+                } else {
+                    console.log(`Invalid target ID: ${targetId} for user ${userId}`);
+                    bot.sendMessage(chatId, "Sorry, there was an error identifying your valentine pair.");
+                }
+            } else {
+                console.log(`No valentine pair found for user ${userId}`);
             }
         } catch (error) {
             console.error('Database error:', error);
