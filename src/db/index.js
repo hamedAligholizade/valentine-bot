@@ -7,7 +7,7 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD,
     host: 'postgres',
     database: process.env.DB_NAME,
-    port: 5432,
+    port: 5438,
 });
 
 // Initialize database schema
