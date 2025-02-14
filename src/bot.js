@@ -67,7 +67,7 @@ bot.onText(/\/start/, async (msg) => {
 
             // Send the initial valentine message
             await bot.sendMessage(chatId, "💘 Someone sent you a valentine message!");
-            await bot.sendSticker(chatId, 'CAACAgIAAxkBAAEBPQZlK6XE9jG-8WO5QVLvBuoAAXCF_gACIgADr8ZRGhXNsJ_AAAABeB4E');
+            // await bot.sendSticker(chatId, 'CAACAgIAAxkBAAEBPQZlK6XE9jG-8WO5QVLvBuoAAXCF_gACIgADr8ZRGhXNsJ_AAAABeB4E');
             await bot.sendMessage(chatId, pair.initial_message);
             return bot.sendMessage(chatId, "You can now reply to them through me, and I'll pass your messages along! 💝");
         }
